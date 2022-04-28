@@ -1,0 +1,39 @@
+{
+  "name": "quick-api-client",
+  "description": "Quick API client useful for most Rest API's",
+  "author": "Derek Stotz <okiedokieiguess@gmail.com>",
+  "keywords": [
+    "api",
+    "rest",
+    "client",
+    "quick"
+  ],
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dstotz/quick-api-client"
+  },
+  "homepage": "https://github.com/dstotz/quick-api-client",
+  "bugs": {
+    "url": "https://github.com/dstotz/quick-api-client/issues"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": {
+    "node": "^12.13.0 || ^14.15.0 || ^16.13.0 || >=17.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@types/jest": "^27.4.1",
+    "@types/node": "17.0.24",
+    "jest": "^27.4.1",
+    "ts-jest": "^27.1.4",
+    "ts-node": "^10.7.0",
+    "typescript": "4.6.3"
+  },
+  "files": ["dist/*"]
+}
