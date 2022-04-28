@@ -1,7 +1,7 @@
 # Quick API Client
 
-[![npm version](https://badge.fury.io/js/quick-api-client.svg)](https://www.npmjs.com/package/quick-api-client)
-[![Downloads](https://img.shields.io/npm/dm/quick-api-client.svg)](https://www.npmjs.com/package/quick-api-client)
+[![npm version](https://img.shields.io/npm/v/quick-api-client)](https://www.npmjs.com/package/quick-api-client)
+[![Downloads](https://img.shields.io/npm/dm/quick-api-client)](https://www.npmjs.com/package/quick-api-client)
 
 Quick API Client is made to be a lightweight wrapper for using Rest API's without needing to write a whole API client. This client also supports pagination using query parameters so you do not need to handle that in your app.
 
