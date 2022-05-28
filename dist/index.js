@@ -56,7 +56,7 @@ var createQuickApiClient = function (clientOptions) {
             switch (_a.label) {
                 case 0:
                     requestUrl = (0, exports.buildRequestUrl)(clientOptions, endpoint, queryParams);
-                    requestInit = __assign(__assign({}, init), {
+                    requestInit = __assign(__assign(__assign({}, clientOptions.defaultInit), init), {
                         headers: __assign(__assign({}, headers), init.headers),
                     });
                     return [4, fetch(requestUrl, requestInit)];
@@ -70,12 +70,12 @@ var createQuickApiClient = function (clientOptions) {
         });
     }); };
     var get = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-        var endpoint, headers, body, params;
+        var endpoint, headers, body, params, init;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params;
-                    return [4, makeRequest(endpoint, { method: 'GET', headers: headers, body: body }, params)];
+                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params, init = options.init;
+                    return [4, makeRequest(endpoint, __assign({ method: 'GET', headers: headers, body: body }, init), params)];
                 case 1: return [2, _a.sent()];
             }
         });
@@ -109,34 +109,34 @@ var createQuickApiClient = function (clientOptions) {
         });
     }); };
     var put = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-        var endpoint, headers, body, params;
+        var endpoint, headers, body, params, init;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params;
-                    return [4, makeRequest(endpoint, { method: 'PUT', headers: headers, body: body }, params)];
+                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params, init = options.init;
+                    return [4, makeRequest(endpoint, __assign({ method: 'PUT', headers: headers, body: body }, init), params)];
                 case 1: return [2, _a.sent()];
             }
         });
     }); };
     var post = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-        var endpoint, headers, body, params;
+        var endpoint, headers, body, params, init;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params;
-                    return [4, makeRequest(endpoint, { method: 'POST', headers: headers, body: body }, params)];
+                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params, init = options.init;
+                    return [4, makeRequest(endpoint, __assign({ method: 'POST', headers: headers, body: body }, init), params)];
                 case 1: return [2, _a.sent()];
             }
         });
     }); };
     var del = function (options) { return __awaiter(void 0, void 0, void 0, function () {
-        var endpoint, headers, body, params;
+        var endpoint, headers, body, params, init;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params;
-                    return [4, makeRequest(endpoint, { method: 'DELETE', headers: headers, body: body }, params)];
+                    endpoint = options.endpoint, headers = options.headers, body = options.body, params = options.params, init = options.init;
+                    return [4, makeRequest(endpoint, __assign({ method: 'DELETE', headers: headers, body: body }, init), params)];
                 case 1: return [2, _a.sent()];
             }
         });

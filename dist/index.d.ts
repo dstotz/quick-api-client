@@ -10,6 +10,7 @@ export interface IClientOptions {
     headers?: {
         [key: string]: any;
     };
+    defaultInit?: RequestInit;
     paginationOptions?: IClientPaginationOptions;
 }
 export interface IClientPaginationOptions {
@@ -22,6 +23,7 @@ export interface IRequestOptions {
     params?: IQueryParams;
     headers?: RequestInit['headers'];
     body?: RequestInit['body'];
+    init?: RequestInit;
 }
 interface IQueryParams {
     [key: string]: any;

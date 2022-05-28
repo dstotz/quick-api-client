@@ -13,6 +13,7 @@ export interface IClient {
 export interface IClientOptions {
   baseUrl?: string;
   headers?: { [key: string]: any };
+  defaultInit?: RequestInit;
   paginationOptions?: IClientPaginationOptions;
 }
 
@@ -27,6 +28,7 @@ export interface IRequestOptions {
   params?: IQueryParams
   headers?: RequestInit['headers'];
   body?: RequestInit['body'];
+  init?: RequestInit
 }
 
 interface IQueryParams { [key: string]: any }
@@ -43,6 +45,7 @@ export const createQuickApiClient = (
   ): Promise<T> => {
     const requestUrl = buildRequestUrl(clientOptions, endpoint, queryParams);
     const requestInit: RequestInit = {
+      ...clientOptions.defaultInit,
       ...init,
       ...{
         headers: {
@@ -62,11 +65,11 @@ export const createQuickApiClient = (
   };
 
   const get = async <T>(options: IRequestOptions): Promise<T> => {
-    const { endpoint, headers, body, params } = options;
+    const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      { method: 'GET', headers, body },
-      params
+      {...{ method: 'GET', headers, body }, ...init},
+      params,
     );
   };
 
@@ -106,28 +109,28 @@ export const createQuickApiClient = (
   };
 
   const put = async <T>(options: IRequestOptions): Promise<T> => {
-    const { endpoint, headers, body, params } = options;
+    const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      { method: 'PUT', headers, body },
+      {...{ method: 'PUT', headers, body }, ...init},
       params
     );
   };
 
   const post = async <T>(options: IRequestOptions): Promise<T> => {
-    const { endpoint, headers, body, params } = options;
+    const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      { method: 'POST', headers, body },
+      {...{ method: 'POST', headers, body }, ...init},
       params
     );
   };
 
   const del = async <T>(options: IRequestOptions): Promise<T> => {
-    const { endpoint, headers, body, params } = options;
+    const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      { method: 'DELETE', headers, body },
+      {...{ method: 'DELETE', headers, body }, ...init},
       params
     );
   };
