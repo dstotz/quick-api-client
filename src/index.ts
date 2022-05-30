@@ -1,47 +1,49 @@
-export interface IClient {
-  get: <T>(options: IRequestOptions) => Promise<T>;
+export interface QuickApiClient {
+  get: <T>(options: RequestOptions) => Promise<T>;
   getPaginated: <T>(
-    options: IRequestOptions,
+    options: RequestOptions,
     callback: (results: T, rawResults: any) => void,
     page?: number
   ) => void;
-  put: <T>(options: IRequestOptions) => Promise<T>;
-  post: <T>(options: IRequestOptions) => Promise<T>;
-  del: <T>(options: IRequestOptions) => Promise<T>;
+  put: <T>(options: RequestOptions) => Promise<T>;
+  post: <T>(options: RequestOptions) => Promise<T>;
+  del: <T>(options: RequestOptions) => Promise<T>;
+  clientOptions: ClientOptions
 }
 
-export interface IClientOptions {
+export interface ClientOptions {
   baseUrl?: string;
   headers?: { [key: string]: any };
   defaultInit?: RequestInit;
-  paginationOptions?: IClientPaginationOptions;
+  paginationOptions?: ClientPaginationOptions;
 }
 
-export interface IClientPaginationOptions {
-  pageParam?: string; // Query param used for specifying the current page
-  resultKey?: string; // When specified, tells which key in the response body contains the array of results
-  lastPage?: (results: any) => boolean; // Tell if this is the last page proactively without needing to make an extra API request to find out 0 results
+export interface ClientPaginationOptions {
+  /** Query param used for specifying the current page */
+  pageParam?: string;
+  /** When specified, tells which key in the response body contains the array of results */
+  resultKey?: string;
+  /** Tell if this is the last page proactively without needing to make an extra API request to find out 0 results */
+  lastPage?: (results: any) => boolean;
 }
 
-export interface IRequestOptions {
+export interface RequestOptions {
   endpoint: string;
-  params?: IQueryParams
+  params?: QueryParams
   headers?: RequestInit['headers'];
   body?: RequestInit['body'];
   init?: RequestInit
 }
 
-interface IQueryParams { [key: string]: any }
+interface QueryParams { [key: string]: any }
 
 export const createQuickApiClient = (
-  clientOptions: IClientOptions
-): IClient => {
-  const { headers, paginationOptions } = clientOptions;
-
+  clientOptions: ClientOptions
+): QuickApiClient => {
   const makeRequest = async <T>(
     endpoint: string,
     init: RequestInit,
-    queryParams?: IQueryParams
+    queryParams?: QueryParams
   ): Promise<T> => {
     const requestUrl = buildRequestUrl(clientOptions, endpoint, queryParams);
     const requestInit: RequestInit = {
@@ -49,7 +51,7 @@ export const createQuickApiClient = (
       ...init,
       ...{
         headers: {
-          ...headers,
+          ...clientOptions.headers,
           ...init.headers,
         },
       },
@@ -64,7 +66,7 @@ export const createQuickApiClient = (
     }
   };
 
-  const get = async <T>(options: IRequestOptions): Promise<T> => {
+  const get = async <T>(options: RequestOptions): Promise<T> => {
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
@@ -74,11 +76,11 @@ export const createQuickApiClient = (
   };
 
   const getPaginated = async <T>(
-    options: IRequestOptions,
+    options: RequestOptions,
     callback: (results: T, rawResults: any) => void,
     page?: number
   ) => {
-    const pageParam = paginationOptions?.pageParam || 'page';
+    const pageParam = clientOptions.paginationOptions?.pageParam || 'page';
     const params = options.params || {};
     const currentPage = page || params[pageParam] || 1;
 
@@ -86,8 +88,8 @@ export const createQuickApiClient = (
       ...options,
       ...{ params: { ...options.params, [pageParam]: currentPage } },
     }).then((rawResults) => {
-      const results = paginationOptions?.resultKey
-        ? (rawResults[paginationOptions.resultKey as keyof T] as unknown as T)
+      const results = clientOptions.paginationOptions?.resultKey
+        ? (rawResults[clientOptions.paginationOptions.resultKey as keyof T] as unknown as T)
         : rawResults;
       if (
         results === null ||
@@ -99,7 +101,7 @@ export const createQuickApiClient = (
         return;
       }
 
-      if (paginationOptions?.lastPage && paginationOptions.lastPage(results)) {
+      if (clientOptions.paginationOptions?.lastPage && clientOptions.paginationOptions.lastPage(results)) {
         return;
       }
 
@@ -108,7 +110,7 @@ export const createQuickApiClient = (
     });
   };
 
-  const put = async <T>(options: IRequestOptions): Promise<T> => {
+  const put = async <T>(options: RequestOptions): Promise<T> => {
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
@@ -117,7 +119,7 @@ export const createQuickApiClient = (
     );
   };
 
-  const post = async <T>(options: IRequestOptions): Promise<T> => {
+  const post = async <T>(options: RequestOptions): Promise<T> => {
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
@@ -126,7 +128,7 @@ export const createQuickApiClient = (
     );
   };
 
-  const del = async <T>(options: IRequestOptions): Promise<T> => {
+  const del = async <T>(options: RequestOptions): Promise<T> => {
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
@@ -141,13 +143,14 @@ export const createQuickApiClient = (
     put,
     post,
     del,
+    clientOptions
   };
 };
 
 export const buildRequestUrl = (
-  clientOptions: IClientOptions,
+  clientOptions: ClientOptions,
   endpoint: string,
-  queryParams?: IQueryParams
+  queryParams?: QueryParams
 ): string => {
   const parts: string[] = [endpoint];
   if (

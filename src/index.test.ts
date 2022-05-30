@@ -1,11 +1,11 @@
 import {
-  IClientOptions,
+  ClientOptions,
   buildRequestUrl,
   createQuickApiClient,
 } from '.';
 
 describe('quickApiClient', () => {
-  let options: IClientOptions = {};
+  let options: ClientOptions = {};
 
   afterEach(() => {
     options = {};

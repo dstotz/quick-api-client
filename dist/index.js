@@ -49,7 +49,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildRequestUrl = exports.createQuickApiClient = void 0;
 var createQuickApiClient = function (clientOptions) {
-    var headers = clientOptions.headers, paginationOptions = clientOptions.paginationOptions;
     var makeRequest = function (endpoint, init, queryParams) { return __awaiter(void 0, void 0, void 0, function () {
         var requestUrl, requestInit, response;
         return __generator(this, function (_a) {
@@ -57,7 +56,7 @@ var createQuickApiClient = function (clientOptions) {
                 case 0:
                     requestUrl = (0, exports.buildRequestUrl)(clientOptions, endpoint, queryParams);
                     requestInit = __assign(__assign(__assign({}, clientOptions.defaultInit), init), {
-                        headers: __assign(__assign({}, headers), init.headers),
+                        headers: __assign(__assign({}, clientOptions.headers), init.headers),
                     });
                     return [4, fetch(requestUrl, requestInit)];
                 case 1:
@@ -83,13 +82,15 @@ var createQuickApiClient = function (clientOptions) {
     var getPaginated = function (options, callback, page) { return __awaiter(void 0, void 0, void 0, function () {
         var pageParam, params, currentPage;
         var _a;
-        return __generator(this, function (_b) {
-            pageParam = (paginationOptions === null || paginationOptions === void 0 ? void 0 : paginationOptions.pageParam) || 'page';
+        var _b;
+        return __generator(this, function (_c) {
+            pageParam = ((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.pageParam) || 'page';
             params = options.params || {};
             currentPage = page || params[pageParam] || 1;
             get(__assign(__assign({}, options), { params: __assign(__assign({}, options.params), (_a = {}, _a[pageParam] = currentPage, _a)) })).then(function (rawResults) {
-                var results = (paginationOptions === null || paginationOptions === void 0 ? void 0 : paginationOptions.resultKey)
-                    ? rawResults[paginationOptions.resultKey]
+                var _a, _b;
+                var results = ((_a = clientOptions.paginationOptions) === null || _a === void 0 ? void 0 : _a.resultKey)
+                    ? rawResults[clientOptions.paginationOptions.resultKey]
                     : rawResults;
                 if (results === null ||
                     results === undefined ||
@@ -99,7 +100,7 @@ var createQuickApiClient = function (clientOptions) {
                 else {
                     return;
                 }
-                if ((paginationOptions === null || paginationOptions === void 0 ? void 0 : paginationOptions.lastPage) && paginationOptions.lastPage(results)) {
+                if (((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.lastPage) && clientOptions.paginationOptions.lastPage(results)) {
                     return;
                 }
                 var nextPage = currentPage + 1;
@@ -147,6 +148,7 @@ var createQuickApiClient = function (clientOptions) {
         put: put,
         post: post,
         del: del,
+        clientOptions: clientOptions
     };
 };
 exports.createQuickApiClient = createQuickApiClient;

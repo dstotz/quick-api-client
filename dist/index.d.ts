@@ -1,33 +1,34 @@
-export interface IClient {
-    get: <T>(options: IRequestOptions) => Promise<T>;
-    getPaginated: <T>(options: IRequestOptions, callback: (results: T, rawResults: any) => void, page?: number) => void;
-    put: <T>(options: IRequestOptions) => Promise<T>;
-    post: <T>(options: IRequestOptions) => Promise<T>;
-    del: <T>(options: IRequestOptions) => Promise<T>;
+export interface QuickApiClient {
+    get: <T>(options: RequestOptions) => Promise<T>;
+    getPaginated: <T>(options: RequestOptions, callback: (results: T, rawResults: any) => void, page?: number) => void;
+    put: <T>(options: RequestOptions) => Promise<T>;
+    post: <T>(options: RequestOptions) => Promise<T>;
+    del: <T>(options: RequestOptions) => Promise<T>;
+    clientOptions: ClientOptions;
 }
-export interface IClientOptions {
+export interface ClientOptions {
     baseUrl?: string;
     headers?: {
         [key: string]: any;
     };
     defaultInit?: RequestInit;
-    paginationOptions?: IClientPaginationOptions;
+    paginationOptions?: ClientPaginationOptions;
 }
-export interface IClientPaginationOptions {
+export interface ClientPaginationOptions {
     pageParam?: string;
     resultKey?: string;
     lastPage?: (results: any) => boolean;
 }
-export interface IRequestOptions {
+export interface RequestOptions {
     endpoint: string;
-    params?: IQueryParams;
+    params?: QueryParams;
     headers?: RequestInit['headers'];
     body?: RequestInit['body'];
     init?: RequestInit;
 }
-interface IQueryParams {
+interface QueryParams {
     [key: string]: any;
 }
-export declare const createQuickApiClient: (clientOptions: IClientOptions) => IClient;
-export declare const buildRequestUrl: (clientOptions: IClientOptions, endpoint: string, queryParams?: IQueryParams | undefined) => string;
+export declare const createQuickApiClient: (clientOptions: ClientOptions) => QuickApiClient;
+export declare const buildRequestUrl: (clientOptions: ClientOptions, endpoint: string, queryParams?: QueryParams | undefined) => string;
 export default createQuickApiClient;

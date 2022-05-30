@@ -1,5 +1,13 @@
 # Changelog
 
+## v.1.2.0
+
+- Client options can now be retrieved after initialization
+
+### Breaking changes
+
+- Updated exported type names to remove I prefix
+
 ## v.1.1.0
 
 ### Changed
