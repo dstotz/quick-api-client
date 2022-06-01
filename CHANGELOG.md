@@ -1,6 +1,11 @@
 # Changelog
 
-## v.1.2.0
+## v1.2.1
+
+- Added ability to set default query parameters at the client level. Useful for query param auth.
+- Updated documentation for Node versions without fetch
+
+## v1.2.0
 
 - Client options can now be retrieved after initialization
 
@@ -8,12 +13,12 @@
 
 - Updated exported type names to remove I prefix
 
-## v.1.1.0
+## v1.1.0
 
 ### Changed
 
 - Add ability to set request init per request, or a default init at the client level
 
-## v.1.0.0
+## v1.0.0
 
 - Initial version

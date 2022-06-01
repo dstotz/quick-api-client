@@ -61,6 +61,22 @@ describe('quickApiClient', () => {
           expect(url).toEqual(`${options.baseUrl}/items?test=hey`);
         });
       });
+
+      describe('with default query params', () => {
+        it('merges the query params', () => {
+          options.defaultQueryParams = {test1: 'hello'}
+          const url = buildRequestUrl(options, 'items', {test2: 'hey'})
+          expect(url).toEqual(`${options.baseUrl}/items?test1=hello&test2=hey`);
+        })
+      })
+
+      describe('with conflicting default query params', () => {
+        it('prefers the request query param', () => {
+          options.defaultQueryParams = {test1: 'hello', test2: 'hi'}
+          const url = buildRequestUrl(options, 'items', {test1: 'hey'})
+          expect(url).toEqual(`${options.baseUrl}/items?test1=hey&test2=hi`);
+        })
+      })
     });
 
     describe('without query params', () => {

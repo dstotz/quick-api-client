@@ -13,6 +13,7 @@ export interface ClientOptions {
     };
     defaultInit?: RequestInit;
     paginationOptions?: ClientPaginationOptions;
+    defaultQueryParams?: QueryParams;
 }
 export interface ClientPaginationOptions {
     pageParam?: string;

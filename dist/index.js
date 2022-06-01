@@ -172,8 +172,9 @@ var buildRequestUrl = function (clientOptions, endpoint, queryParams) {
         return urlPart;
     })
         .join('/');
-    if (queryParams) {
-        var searchParams = new URLSearchParams(queryParams);
+    if (queryParams || clientOptions.defaultQueryParams) {
+        var allParams = __assign(__assign({}, clientOptions.defaultQueryParams), queryParams);
+        var searchParams = new URLSearchParams(allParams);
         var urlLastChar = urlString[urlString.length - 1];
         if (urlLastChar !== '?' && urlLastChar !== '&') {
             if (urlString.includes('?')) {

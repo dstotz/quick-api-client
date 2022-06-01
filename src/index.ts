@@ -16,6 +16,7 @@ export interface ClientOptions {
   headers?: { [key: string]: any };
   defaultInit?: RequestInit;
   paginationOptions?: ClientPaginationOptions;
+  defaultQueryParams?: QueryParams
 }
 
 export interface ClientPaginationOptions {
@@ -175,8 +176,9 @@ export const buildRequestUrl = (
     })
     .join('/');
 
-  if (queryParams) {
-    const searchParams = new URLSearchParams(queryParams);
+  if (queryParams || clientOptions.defaultQueryParams) {
+    const allParams = {...clientOptions.defaultQueryParams, ...queryParams}
+    const searchParams = new URLSearchParams(allParams);
     const urlLastChar = urlString[urlString.length - 1];
     if (urlLastChar !== '?' && urlLastChar !== '&') {
       if (urlString.includes('?')) {
