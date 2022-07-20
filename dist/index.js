@@ -47,7 +47,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildRequestUrl = exports.createQuickApiClient = void 0;
+exports.buildRequestUrl = exports.buildQueryParams = exports.createQuickApiClient = void 0;
 var createQuickApiClient = function (clientOptions) {
     var makeRequest = function (endpoint, init, queryParams) { return __awaiter(void 0, void 0, void 0, function () {
         var requestUrl, requestInit, response;
@@ -100,7 +100,8 @@ var createQuickApiClient = function (clientOptions) {
                 else {
                     return;
                 }
-                if (((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.lastPage) && clientOptions.paginationOptions.lastPage(results)) {
+                if (((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.lastPage) &&
+                    clientOptions.paginationOptions.lastPage(results)) {
                     return;
                 }
                 var nextPage = currentPage + 1;
@@ -148,15 +149,30 @@ var createQuickApiClient = function (clientOptions) {
         put: put,
         post: post,
         del: del,
-        clientOptions: clientOptions
+        clientOptions: clientOptions,
     };
 };
 exports.createQuickApiClient = createQuickApiClient;
+var buildQueryParams = function (clientOptions, queryParams) {
+    if (!queryParams && !clientOptions.defaultQueryParams)
+        return null;
+    var allParams = __assign(__assign({}, clientOptions.defaultQueryParams), queryParams);
+    var searchParams = new URLSearchParams();
+    Object.keys(allParams).forEach(function (key) {
+        var val = allParams[key];
+        if (key.includes('[]')) {
+            val.forEach(function (v) { return searchParams.append(key, v); });
+        }
+        else {
+            searchParams.append(key, val);
+        }
+    });
+    return searchParams.toString();
+};
+exports.buildQueryParams = buildQueryParams;
 var buildRequestUrl = function (clientOptions, endpoint, queryParams) {
     var parts = [endpoint];
-    if (clientOptions.baseUrl &&
-        !endpoint.includes('http://') &&
-        !endpoint.includes('https://')) {
+    if (clientOptions.baseUrl && !endpoint.includes('http://') && !endpoint.includes('https://')) {
         parts.unshift(clientOptions.baseUrl);
     }
     var urlString = parts
@@ -172,9 +188,8 @@ var buildRequestUrl = function (clientOptions, endpoint, queryParams) {
         return urlPart;
     })
         .join('/');
-    if (queryParams || clientOptions.defaultQueryParams) {
-        var allParams = __assign(__assign({}, clientOptions.defaultQueryParams), queryParams);
-        var searchParams = new URLSearchParams(allParams);
+    var queryString = (0, exports.buildQueryParams)(clientOptions, queryParams);
+    if (queryString) {
         var urlLastChar = urlString[urlString.length - 1];
         if (urlLastChar !== '?' && urlLastChar !== '&') {
             if (urlString.includes('?')) {
@@ -184,7 +199,7 @@ var buildRequestUrl = function (clientOptions, endpoint, queryParams) {
                 urlString += '?';
             }
         }
-        urlString += searchParams.toString();
+        urlString += queryString;
     }
     return new URL(urlString).toString();
 };

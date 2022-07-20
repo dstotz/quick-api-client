@@ -3,12 +3,12 @@ export interface QuickApiClient {
   getPaginated: <T>(
     options: RequestOptions,
     callback: (results: T, rawResults: any) => void,
-    page?: number
+    page?: number,
   ) => void;
   put: <T>(options: RequestOptions) => Promise<T>;
   post: <T>(options: RequestOptions) => Promise<T>;
   del: <T>(options: RequestOptions) => Promise<T>;
-  clientOptions: ClientOptions
+  clientOptions: ClientOptions;
 }
 
 export interface ClientOptions {
@@ -16,7 +16,7 @@ export interface ClientOptions {
   headers?: { [key: string]: any };
   defaultInit?: RequestInit;
   paginationOptions?: ClientPaginationOptions;
-  defaultQueryParams?: QueryParams
+  defaultQueryParams?: QueryParams;
 }
 
 export interface ClientPaginationOptions {
@@ -30,21 +30,23 @@ export interface ClientPaginationOptions {
 
 export interface RequestOptions {
   endpoint: string;
-  params?: QueryParams
+  params?: QueryParams;
   headers?: RequestInit['headers'];
   body?: RequestInit['body'];
-  init?: RequestInit
+  init?: RequestInit;
 }
 
-interface QueryParams { [key: string]: any }
+interface QueryParams {
+  [key: string]: any;
+}
 
 export const createQuickApiClient = (
-  clientOptions: ClientOptions
+  clientOptions: ClientOptions,
 ): QuickApiClient => {
   const makeRequest = async <T>(
     endpoint: string,
     init: RequestInit,
-    queryParams?: QueryParams
+    queryParams?: QueryParams,
   ): Promise<T> => {
     const requestUrl = buildRequestUrl(clientOptions, endpoint, queryParams);
     const requestInit: RequestInit = {
@@ -71,7 +73,7 @@ export const createQuickApiClient = (
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      {...{ method: 'GET', headers, body }, ...init},
+      { ...{ method: 'GET', headers, body }, ...init },
       params,
     );
   };
@@ -79,7 +81,7 @@ export const createQuickApiClient = (
   const getPaginated = async <T>(
     options: RequestOptions,
     callback: (results: T, rawResults: any) => void,
-    page?: number
+    page?: number,
   ) => {
     const pageParam = clientOptions.paginationOptions?.pageParam || 'page';
     const params = options.params || {};
@@ -90,7 +92,9 @@ export const createQuickApiClient = (
       ...{ params: { ...options.params, [pageParam]: currentPage } },
     }).then((rawResults) => {
       const results = clientOptions.paginationOptions?.resultKey
-        ? (rawResults[clientOptions.paginationOptions.resultKey as keyof T] as unknown as T)
+        ? (rawResults[
+            clientOptions.paginationOptions.resultKey as keyof T
+          ] as unknown as T)
         : rawResults;
       if (
         results === null ||
@@ -102,7 +106,10 @@ export const createQuickApiClient = (
         return;
       }
 
-      if (clientOptions.paginationOptions?.lastPage && clientOptions.paginationOptions.lastPage(results)) {
+      if (
+        clientOptions.paginationOptions?.lastPage &&
+        clientOptions.paginationOptions.lastPage(results)
+      ) {
         return;
       }
 
@@ -115,8 +122,8 @@ export const createQuickApiClient = (
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      {...{ method: 'PUT', headers, body }, ...init},
-      params
+      { ...{ method: 'PUT', headers, body }, ...init },
+      params,
     );
   };
 
@@ -124,8 +131,8 @@ export const createQuickApiClient = (
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      {...{ method: 'POST', headers, body }, ...init},
-      params
+      { ...{ method: 'POST', headers, body }, ...init },
+      params,
     );
   };
 
@@ -133,8 +140,8 @@ export const createQuickApiClient = (
     const { endpoint, headers, body, params, init } = options;
     return await makeRequest<T>(
       endpoint,
-      {...{ method: 'DELETE', headers, body }, ...init},
-      params
+      { ...{ method: 'DELETE', headers, body }, ...init },
+      params,
     );
   };
 
@@ -144,14 +151,34 @@ export const createQuickApiClient = (
     put,
     post,
     del,
-    clientOptions
+    clientOptions,
   };
+};
+
+export const buildQueryParams = (
+  clientOptions: ClientOptions,
+  queryParams?: QueryParams,
+): string | null => {
+  if (!queryParams && !clientOptions.defaultQueryParams) return null;
+
+  const allParams = { ...clientOptions.defaultQueryParams, ...queryParams };
+  const searchParams = new URLSearchParams();
+  Object.keys(allParams).forEach((key) => {
+    const val = allParams[key];
+    if (key.includes('[]')) {
+      val.forEach((v: any) => searchParams.append(key, v));
+    } else {
+      searchParams.append(key, val);
+    }
+  });
+
+  return searchParams.toString();
 };
 
 export const buildRequestUrl = (
   clientOptions: ClientOptions,
   endpoint: string,
-  queryParams?: QueryParams
+  queryParams?: QueryParams,
 ): string => {
   const parts: string[] = [endpoint];
   if (
@@ -176,9 +203,8 @@ export const buildRequestUrl = (
     })
     .join('/');
 
-  if (queryParams || clientOptions.defaultQueryParams) {
-    const allParams = {...clientOptions.defaultQueryParams, ...queryParams}
-    const searchParams = new URLSearchParams(allParams);
+  const queryString = buildQueryParams(clientOptions, queryParams);
+  if (queryString) {
     const urlLastChar = urlString[urlString.length - 1];
     if (urlLastChar !== '?' && urlLastChar !== '&') {
       if (urlString.includes('?')) {
@@ -187,10 +213,10 @@ export const buildRequestUrl = (
         urlString += '?';
       }
     }
-    urlString += searchParams.toString();
+    urlString += queryString;
   }
 
   return new URL(urlString).toString();
 };
 
-export default createQuickApiClient
+export default createQuickApiClient;

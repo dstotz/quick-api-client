@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.2.2
+
+- Added support for array query parameters that use square brackets. Ex: `key[]=1&key[]=2`
+
 ## v1.2.1
 
 - Added ability to set default query parameters at the client level. Useful for query param auth.

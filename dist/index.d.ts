@@ -31,5 +31,6 @@ interface QueryParams {
     [key: string]: any;
 }
 export declare const createQuickApiClient: (clientOptions: ClientOptions) => QuickApiClient;
+export declare const buildQueryParams: (clientOptions: ClientOptions, queryParams?: QueryParams | undefined) => string | null;
 export declare const buildRequestUrl: (clientOptions: ClientOptions, endpoint: string, queryParams?: QueryParams | undefined) => string;
 export default createQuickApiClient;

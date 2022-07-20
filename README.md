@@ -95,6 +95,26 @@ client.getPaginated<Item[]>(
 )
 ```
 
+### Query params
+
+You can specify query params at the client level that get passed to each request, and also per-request which will override the client level params if there is a conflict. The query params object can optionally include keys with `[]` in them containing an array of values to support API's that utilize the `key[]=` syntax with mutliple identical keys.
+
+Example usage
+
+```typescript
+client.get(
+  {
+    endpoint: 'items',
+    params: {
+      active: true,
+      'fields[]': ['description', 'cost', 'price']
+    }
+  }
+)
+// This will build the query string `items?active=true&fields[]=description&fields[]=cost&fields[]=price`
+
+```
+
 ### Node versions without fetch
 
 This library depends on fetch, so if you are using a version of Node without fetch included, you can install and use `node-fetch` using yarn or npm and then use it with
