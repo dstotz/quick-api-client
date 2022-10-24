@@ -1,6 +1,6 @@
 export interface QuickApiClient {
     get: <T>(options: RequestOptions) => Promise<T>;
-    getPaginated: <T>(options: RequestOptions, callback: (results: T, rawResults: any) => void, page?: number) => void;
+    getPaginated: <T>(options: RequestOptions, callback: (results: T, rawResults: any) => void, page?: number) => Promise<void>;
     put: <T>(options: RequestOptions) => Promise<T>;
     post: <T>(options: RequestOptions) => Promise<T>;
     del: <T>(options: RequestOptions) => Promise<T>;
@@ -31,6 +31,6 @@ interface QueryParams {
     [key: string]: any;
 }
 export declare const createQuickApiClient: (clientOptions: ClientOptions) => QuickApiClient;
-export declare const buildQueryParams: (clientOptions: ClientOptions, queryParams?: QueryParams | undefined) => string | null;
-export declare const buildRequestUrl: (clientOptions: ClientOptions, endpoint: string, queryParams?: QueryParams | undefined) => string;
+export declare const buildQueryParams: (clientOptions: ClientOptions, queryParams?: QueryParams) => string | null;
+export declare const buildRequestUrl: (clientOptions: ClientOptions, endpoint: string, queryParams?: QueryParams) => string;
 export default createQuickApiClient;

@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.3.0
+
+- Added node-fetch dependency to allow it to function in any version of Node supported
+- Improved getPaginated to increase reliability and allow promises in callback
+
 ## v1.2.2
 
 - Added support for array query parameters that use square brackets. Ex: `key[]=1&key[]=2`

@@ -1,10 +1,12 @@
+const fetch = require('node-fetch');
+
 export interface QuickApiClient {
   get: <T>(options: RequestOptions) => Promise<T>;
   getPaginated: <T>(
     options: RequestOptions,
     callback: (results: T, rawResults: any) => void,
     page?: number,
-  ) => void;
+  ) => Promise<void>;
   put: <T>(options: RequestOptions) => Promise<T>;
   post: <T>(options: RequestOptions) => Promise<T>;
   del: <T>(options: RequestOptions) => Promise<T>;
@@ -80,42 +82,42 @@ export const createQuickApiClient = (
 
   const getPaginated = async <T>(
     options: RequestOptions,
-    callback: (results: T, rawResults: any) => void,
+    callback: (results: T, rawResults: any) => void | Promise<void>,
     page?: number,
-  ) => {
+  ): Promise<void> => {
     const pageParam = clientOptions.paginationOptions?.pageParam || 'page';
     const params = options.params || {};
-    const currentPage = page || params[pageParam] || 1;
+    let currentPage = page || params[pageParam] || 1;
+    let done = false;
+    const resultKey = clientOptions.paginationOptions?.resultKey as
+      | keyof T
+      | undefined;
 
-    get<T>({
-      ...options,
-      ...{ params: { ...options.params, [pageParam]: currentPage } },
-    }).then((rawResults) => {
-      const results = clientOptions.paginationOptions?.resultKey
-        ? (rawResults[
-            clientOptions.paginationOptions.resultKey as keyof T
-          ] as unknown as T)
-        : rawResults;
-      if (
-        results === null ||
-        results === undefined ||
-        (Array.isArray(results) && results.length > 0)
-      ) {
-        callback(results, rawResults);
-      } else {
+    do {
+      const rawResults = await get<any>({
+        ...options,
+        ...{ params: { ...options.params, [pageParam]: currentPage } },
+      });
+
+      const results = resultKey ? rawResults[resultKey] : rawResults;
+
+      if (!results || (Array.isArray(results) && results.length === 0)) {
+        done = true;
         return;
       }
 
       if (
         clientOptions.paginationOptions?.lastPage &&
-        clientOptions.paginationOptions.lastPage(results)
+        clientOptions.paginationOptions?.lastPage(results)
       ) {
+        done = true;
         return;
       }
 
-      const nextPage = currentPage + 1;
-      getPaginated(options, callback, nextPage);
-    });
+      await callback(results as T, rawResults);
+
+      currentPage++;
+    } while (done === false);
   };
 
   const put = async <T>(options: RequestOptions): Promise<T> => {

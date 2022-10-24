@@ -114,12 +114,3 @@ client.get(
 // This will build the query string `items?active=true&fields[]=description&fields[]=cost&fields[]=price`
 
 ```
-
-### Node versions without fetch
-
-This library depends on fetch, so if you are using a version of Node without fetch included, you can install and use `node-fetch` using yarn or npm and then use it with
-
-```typescript
-import fetch from 'node-fetch'
-globalThis.fetch = fetch
-```

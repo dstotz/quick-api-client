@@ -48,6 +48,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildRequestUrl = exports.buildQueryParams = exports.createQuickApiClient = void 0;
+var fetch = require('node-fetch');
 var createQuickApiClient = function (clientOptions) {
     var makeRequest = function (endpoint, init, queryParams) { return __awaiter(void 0, void 0, void 0, function () {
         var requestUrl, requestInit, response;
@@ -80,34 +81,41 @@ var createQuickApiClient = function (clientOptions) {
         });
     }); };
     var getPaginated = function (options, callback, page) { return __awaiter(void 0, void 0, void 0, function () {
-        var pageParam, params, currentPage;
+        var pageParam, params, currentPage, done, resultKey, rawResults, results;
         var _a;
-        var _b;
-        return __generator(this, function (_c) {
-            pageParam = ((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.pageParam) || 'page';
-            params = options.params || {};
-            currentPage = page || params[pageParam] || 1;
-            get(__assign(__assign({}, options), { params: __assign(__assign({}, options.params), (_a = {}, _a[pageParam] = currentPage, _a)) })).then(function (rawResults) {
-                var _a, _b;
-                var results = ((_a = clientOptions.paginationOptions) === null || _a === void 0 ? void 0 : _a.resultKey)
-                    ? rawResults[clientOptions.paginationOptions.resultKey]
-                    : rawResults;
-                if (results === null ||
-                    results === undefined ||
-                    (Array.isArray(results) && results.length > 0)) {
-                    callback(results, rawResults);
-                }
-                else {
-                    return;
-                }
-                if (((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.lastPage) &&
-                    clientOptions.paginationOptions.lastPage(results)) {
-                    return;
-                }
-                var nextPage = currentPage + 1;
-                getPaginated(options, callback, nextPage);
-            });
-            return [2];
+        var _b, _c, _d, _e;
+        return __generator(this, function (_f) {
+            switch (_f.label) {
+                case 0:
+                    pageParam = ((_b = clientOptions.paginationOptions) === null || _b === void 0 ? void 0 : _b.pageParam) || 'page';
+                    params = options.params || {};
+                    currentPage = page || params[pageParam] || 1;
+                    done = false;
+                    resultKey = (_c = clientOptions.paginationOptions) === null || _c === void 0 ? void 0 : _c.resultKey;
+                    _f.label = 1;
+                case 1: return [4, get(__assign(__assign({}, options), { params: __assign(__assign({}, options.params), (_a = {}, _a[pageParam] = currentPage, _a)) }))];
+                case 2:
+                    rawResults = _f.sent();
+                    results = resultKey ? rawResults[resultKey] : rawResults;
+                    if (!results || (Array.isArray(results) && results.length === 0)) {
+                        done = true;
+                        return [2];
+                    }
+                    if (((_d = clientOptions.paginationOptions) === null || _d === void 0 ? void 0 : _d.lastPage) &&
+                        ((_e = clientOptions.paginationOptions) === null || _e === void 0 ? void 0 : _e.lastPage(results))) {
+                        done = true;
+                        return [2];
+                    }
+                    return [4, callback(results, rawResults)];
+                case 3:
+                    _f.sent();
+                    currentPage++;
+                    _f.label = 4;
+                case 4:
+                    if (done === false) return [3, 1];
+                    _f.label = 5;
+                case 5: return [2];
+            }
         });
     }); };
     var put = function (options) { return __awaiter(void 0, void 0, void 0, function () {
@@ -172,7 +180,9 @@ var buildQueryParams = function (clientOptions, queryParams) {
 exports.buildQueryParams = buildQueryParams;
 var buildRequestUrl = function (clientOptions, endpoint, queryParams) {
     var parts = [endpoint];
-    if (clientOptions.baseUrl && !endpoint.includes('http://') && !endpoint.includes('https://')) {
+    if (clientOptions.baseUrl &&
+        !endpoint.includes('http://') &&
+        !endpoint.includes('https://')) {
         parts.unshift(clientOptions.baseUrl);
     }
     var urlString = parts
