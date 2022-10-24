@@ -30,6 +30,14 @@ export interface RequestOptions {
 interface QueryParams {
     [key: string]: any;
 }
+export declare class RequestFailed extends Error {
+    status: any;
+    statusText: any;
+    headers: string;
+    url: string;
+    body: any;
+    constructor(response: any);
+}
 export declare const createQuickApiClient: (clientOptions: ClientOptions) => QuickApiClient;
 export declare const buildQueryParams: (clientOptions: ClientOptions, queryParams?: QueryParams) => string | null;
 export declare const buildRequestUrl: (clientOptions: ClientOptions, endpoint: string, queryParams?: QueryParams) => string;

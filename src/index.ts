@@ -42,6 +42,27 @@ interface QueryParams {
   [key: string]: any;
 }
 
+export class RequestFailed extends Error {
+  status: any;
+  statusText: any;
+  headers: string;
+  url: string;
+  body: any;
+
+  constructor(response: any) {
+    super('Request failed');
+
+    this.name = this.constructor.name;
+    Error.captureStackTrace(this, this.constructor);
+
+    this.status = response.status;
+    this.statusText = response.statusText;
+    this.headers = JSON.stringify(response.headers.raw());
+    this.url = response.url;
+    this.body = response.body?.read().toString();
+  }
+}
+
 export const createQuickApiClient = (
   clientOptions: ClientOptions,
 ): QuickApiClient => {
@@ -65,9 +86,10 @@ export const createQuickApiClient = (
     const response = await fetch(requestUrl, requestInit);
 
     if (response.ok) {
-      return (await response.json()) as T;
+      const data = await response.json();
+      return data as T;
     } else {
-      throw new Error(JSON.stringify(response));
+      throw new RequestFailed(response);
     }
   };
 

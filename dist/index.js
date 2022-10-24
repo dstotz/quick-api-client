@@ -1,4 +1,19 @@
 "use strict";
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -47,11 +62,29 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.buildRequestUrl = exports.buildQueryParams = exports.createQuickApiClient = void 0;
+exports.buildRequestUrl = exports.buildQueryParams = exports.createQuickApiClient = exports.RequestFailed = void 0;
 var fetch = require('node-fetch');
+var RequestFailed = (function (_super) {
+    __extends(RequestFailed, _super);
+    function RequestFailed(response) {
+        var _this = this;
+        var _a;
+        _this = _super.call(this, 'Request failed') || this;
+        _this.name = _this.constructor.name;
+        Error.captureStackTrace(_this, _this.constructor);
+        _this.status = response.status;
+        _this.statusText = response.statusText;
+        _this.headers = JSON.stringify(response.headers.raw());
+        _this.url = response.url;
+        _this.body = (_a = response.body) === null || _a === void 0 ? void 0 : _a.read().toString();
+        return _this;
+    }
+    return RequestFailed;
+}(Error));
+exports.RequestFailed = RequestFailed;
 var createQuickApiClient = function (clientOptions) {
     var makeRequest = function (endpoint, init, queryParams) { return __awaiter(void 0, void 0, void 0, function () {
-        var requestUrl, requestInit, response;
+        var requestUrl, requestInit, response, data;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -64,8 +97,10 @@ var createQuickApiClient = function (clientOptions) {
                     response = _a.sent();
                     if (!response.ok) return [3, 3];
                     return [4, response.json()];
-                case 2: return [2, (_a.sent())];
-                case 3: throw new Error(JSON.stringify(response));
+                case 2:
+                    data = _a.sent();
+                    return [2, data];
+                case 3: throw new RequestFailed(response);
             }
         });
     }); };

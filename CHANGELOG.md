@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.3.1
+
+- Add some basic error handling for failed requests
+
 ## v1.3.0
 
 - Added node-fetch dependency to allow it to function in any version of Node supported
